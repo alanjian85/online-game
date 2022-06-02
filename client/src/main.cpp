@@ -8,7 +8,6 @@
 #include "SDL.h"
 
 #include "constants.hpp"
-#include "PlayerState.hpp"
 #include "Client.hpp"
 
 namespace asio = boost::asio;
@@ -28,7 +27,7 @@ int main(int argc, char** argv) {
         SDL_Init(SDL_INIT_VIDEO);
         SDL_Window* window = SDL_CreateWindow(
             "Online Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            SCREEN_WIDTH, SCREEN_HEIGHT, 0
+            800, 600, 0
         );
         SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
