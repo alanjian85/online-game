@@ -7,7 +7,6 @@
 #include <boost/asio.hpp>
 #include "SDL.h"
 
-#include "constants.hpp"
 #include "Client.hpp"
 
 namespace asio = boost::asio;
@@ -19,7 +18,9 @@ int main(int argc, char** argv) {
             throw std::invalid_argument("Usage: client <host> <port>");
         }
 
-        auto player = std::make_shared<PlayerState>();
+        auto player = std::make_shared<Player>();
+        player->setPosition(375, 275);
+
         auto client = std::make_shared<Client>(*player, argv[1], argv[2]);
         std::thread clientThread([client, player]() { client->run(); });
         clientThread.detach();
@@ -43,20 +44,20 @@ int main(int argc, char** argv) {
             }
 
             const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
-            player->setForward(keyboardState[SDL_SCANCODE_W]);
-            player->setBackward(keyboardState[SDL_SCANCODE_S]);
-            player->setLeft(keyboardState[SDL_SCANCODE_A]);
-            player->setRight(keyboardState[SDL_SCANCODE_D]);
-            client->do_send();
+            ClientPayload payload;
+            payload.forward = keyboardState[SDL_SCANCODE_W];
+            payload.backward = keyboardState[SDL_SCANCODE_S];
+            payload.left = keyboardState[SDL_SCANCODE_A];
+            payload.right = keyboardState[SDL_SCANCODE_D];
+            client->do_send(payload);
 
             SDL_SetRenderDrawColor(renderer, 235, 64, 52, 255);
             SDL_RenderClear(renderer);
 
             SDL_Rect rect;
-            rect.x = player->getX();
-            rect.y = player->getY();
-            rect.w = PLAYER_WIDTH;
-            rect.h = PLAYER_HEIGHT;
+            player->getPosition(rect.x, rect.y);
+            rect.w = 50;
+            rect.h = 50;
             SDL_SetRenderDrawColor(renderer, 252, 186, 3, 255);
             SDL_RenderFillRect(renderer, &rect);
 

@@ -5,7 +5,9 @@
 #include <array>
 
 struct ServerPayload {
-    using Buffer = std::array<uint8_t, 12>;
+    static constexpr size_t size = 12;
+
+    using Buffer = std::array<uint8_t, size>;
 
     uint32_t id;
     uint32_t x;
@@ -27,6 +29,7 @@ struct ServerPayload {
         buffer[9]  = y >> 16;
         buffer[10] = y >> 8;
         buffer[11] = y;
+        return buffer;
     }
 
     void decode(Buffer& buffer) {

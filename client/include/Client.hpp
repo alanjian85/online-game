@@ -12,23 +12,23 @@
 
 class Client {
 public:
-    Client(std::string_view host, std::string_view port);
+    Client(Player& player, std::string_view host, std::string_view port);
 
     void run();
 
-    void do_send();
+    void do_send(ClientPayload& payload);
 private:
     void do_receive();
 
 private:
     uint32_t m_id;
-    Player& player;
+    Player& m_player;
 
     boost::asio::io_context m_context;
     boost::asio::ip::udp::socket m_socket;
     boost::asio::ip::udp::endpoint m_endpoint;
 
-    std::array<uint8_t, ServerPayload::size> m_buffer;
+    ServerPayload::Buffer m_buffer;
 };
 
 #endif

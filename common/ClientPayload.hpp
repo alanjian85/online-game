@@ -5,7 +5,9 @@
 #include <array>
 
 struct ClientPayload {
-    using Buffer = std::array<uint8_t, 5>;
+    static constexpr size_t size = 5;
+
+    using Buffer = std::array<uint8_t, size>;
 
     uint32_t id;
     bool forward;
