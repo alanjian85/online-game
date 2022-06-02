@@ -2,7 +2,9 @@
 #define PLAYER_STATE_HPP
 
 #include <cstdint>
-#include <vector>
+#include <array>
+
+#include "constants.hpp"
 
 struct PlayerState {
     int x;
@@ -14,9 +16,9 @@ struct PlayerState {
     bool left;
     bool right;
 
-    std::vector<uint8_t> serialize();
+    std::array<uint8_t, PLAYER_PACKET_SIZE> serialize();
 
-    void deserialize(const std::vector<uint8_t>& buffer);
+    void deserialize(const std::array<uint8_t, PLAYER_PACKET_SIZE>& buffer);
 };
 
 #endif

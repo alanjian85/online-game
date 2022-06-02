@@ -1,25 +1,19 @@
 #include "PlayerState.hpp"
 
-#include <cassert>
-
-std::vector<uint8_t> PlayerState::serialize() {
-    std::vector<uint8_t> buffer;
-    buffer.reserve(5);
-    buffer.push_back((id >> 24) & 0xFF);
-    buffer.push_back((id >> 16) & 0xFF);
-    buffer.push_back((id >>  8) & 0xFF);
-    buffer.push_back((id >>  0) & 0xFF);
-    buffer.push_back(
-        (forward  << 3) | 
-        (backward << 2) | 
-        (left     << 1) | 
-        (right    << 0)
-    );
+std::array<uint8_t, PLAYER_PACKET_SIZE> PlayerState::serialize() {
+    std::array<uint8_t, PLAYER_PACKET_SIZE> buffer;
+    buffer[0] = (id >> 24) & 0xFF;
+    buffer[1] = (id >> 16) & 0xFF;
+    buffer[2] = (id >>  8) & 0xFF;
+    buffer[3] = (id >>  0) & 0xFF;
+    buffer[4] = (forward  << 3) | 
+                (backward << 2) | 
+                (left     << 1) | 
+                (right    << 0);
     return buffer;
 }
 
-void PlayerState::deserialize(const std::vector<uint8_t>& buffer) {
-    assert(buffer.size() == 5);
+void PlayerState::deserialize(const std::array<uint8_t, PLAYER_PACKET_SIZE>& buffer) {
     id  = buffer[0] << 24;
     id |= buffer[1] << 16;
     id |= buffer[2] << 8;
