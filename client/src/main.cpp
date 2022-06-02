@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cassert>
+#include <thread>
 
 #include <boost/asio.hpp>
 #include "SDL.h"
@@ -18,6 +19,10 @@ int main(int argc, char** argv) {
         if (argc != 3) {
             throw std::invalid_argument("Usage: client <host> <port>");
         }
+
+        PlayerState player;
+        Client client(player, argv[1], argv[2]);
+        std::thread clientThread([&client]() { client.run(); });
     
         SDL_Init(SDL_INIT_VIDEO);
         SDL_Window* window = SDL_CreateWindow(
@@ -25,11 +30,6 @@ int main(int argc, char** argv) {
             SCREEN_WIDTH, SCREEN_HEIGHT, 0
         );
         SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-
-        PlayerState player;
-        player.x = PLAYER_SPAWN_X;
-        player.y = PLAYER_SPAWN_Y;
-        player.id = UINT32_MAX;
 
         bool quit = false;
         while (!quit) {
@@ -43,20 +43,19 @@ int main(int argc, char** argv) {
             }
 
             const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
-            player.forward  = keyboardState[SDL_SCANCODE_W];
-            player.backward = keyboardState[SDL_SCANCODE_S];
-            player.left     = keyboardState[SDL_SCANCODE_A];
-            player.right    = keyboardState[SDL_SCANCODE_D];
+            player.setForward(keyboardState[SDL_SCANCODE_W]);
+            player.setBackward(keyboardState[SDL_SCANCODE_S]);
+            player.setLeft(keyboardState[SDL_SCANCODE_A]);
+            player.setRight(keyboardState[SDL_SCANCODE_D]);
 
-            auto buffer = player.serialize();
-            //socket.send_to(asio::buffer(buffer), endpoint);
+            client.do_send();
 
             SDL_SetRenderDrawColor(renderer, 235, 64, 52, 255);
             SDL_RenderClear(renderer);
 
             SDL_Rect rect;
-            rect.x = player.x;
-            rect.y = player.y;
+            rect.x = player.getX();
+            rect.y = player.getY();
             rect.w = 50;
             rect.h = 50;
             SDL_SetRenderDrawColor(renderer, 252, 186, 3, 255);
@@ -68,6 +67,8 @@ int main(int argc, char** argv) {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
+
+        clientThread.join();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;

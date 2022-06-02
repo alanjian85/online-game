@@ -25,7 +25,7 @@ private:
     boost::asio::ip::udp::socket m_socket;
     boost::asio::ip::udp::endpoint m_endpoint;
 
-    std::array<char, PLAYER_PACKET_SIZE> m_buffer;
+    std::array<uint8_t, PLAYER_PACKET_SIZE> m_buffer;
 };
 
 #endif
