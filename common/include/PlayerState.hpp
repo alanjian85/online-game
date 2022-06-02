@@ -16,7 +16,7 @@ struct PlayerState {
 
     std::vector<uint8_t> serialize();
 
-    void deserialize(const std::vector<uint8_t>& data);
+    void deserialize(const std::vector<uint8_t>& buffer);
 };
 
 #endif
