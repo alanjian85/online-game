@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-std::vector<uint8_t> PlayerState::encode() {
+std::vector<uint8_t> PlayerState::serialize() {
     std::vector<uint8_t> data;
     data.reserve(5);
     data.push_back((id >> 24) & 0xFF);
@@ -18,7 +18,7 @@ std::vector<uint8_t> PlayerState::encode() {
     return data;
 }
 
-void PlayerState::decode(const std::vector<uint8_t>& data) {
+void PlayerState::deserialize(const std::vector<uint8_t>& data) {
     assert(data.size() == 5);
     id  = data[0] << 24;
     id |= data[1] << 16;
