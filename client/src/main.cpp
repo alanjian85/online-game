@@ -8,6 +8,7 @@
 
 #include "constants.hpp"
 #include "PlayerState.hpp"
+#include "Client.hpp"
 
 namespace asio = boost::asio;
 using asio::ip::udp;
@@ -17,14 +18,6 @@ int main(int argc, char** argv) {
         if (argc != 3) {
             throw std::invalid_argument("Usage: client <host> <port>");
         }
-
-        asio::io_context context;
-
-        udp::resolver resolver(context);
-        udp::endpoint endpoint = *resolver.resolve(udp::v4(), argv[1], argv[2]);
-
-        udp::socket socket(context);
-        socket.open(udp::v4());
     
         SDL_Init(SDL_INIT_VIDEO);
         SDL_Window* window = SDL_CreateWindow(
@@ -56,7 +49,7 @@ int main(int argc, char** argv) {
             player.right    = keyboardState[SDL_SCANCODE_D];
 
             auto buffer = player.serialize();
-            socket.send_to(asio::buffer(buffer), endpoint);
+            //socket.send_to(asio::buffer(buffer), endpoint);
 
             SDL_SetRenderDrawColor(renderer, 235, 64, 52, 255);
             SDL_RenderClear(renderer);
