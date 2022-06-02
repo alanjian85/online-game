@@ -1,35 +1,29 @@
-#include "SDL.h"
+#include <iostream>
+#include <cstdlib>
+#include <stdexcept>
 
-int main() {
-    SDL_Init(SDL_INIT_VIDEO);
+#include <boost/asio.hpp>
 
-    SDL_Window* window = SDL_CreateWindow("Online Game",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        800, 600,
-        0
-    );
+namespace asio = boost::asio;
+using asio::ip::udp;
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-    bool quit = false;
-    while (!quit) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    quit = true;
-                    break;
-            }
+int main(int argc, char** argv) {
+    try {
+        if (argc != 3) {
+            throw std::invalid_argument("Usage: client <host> <port>");
         }
 
-        SDL_SetRenderDrawColor(renderer, 50, 168, 82, 255);
-        SDL_RenderClear(renderer);
+        asio::io_context context;
 
-        SDL_RenderPresent(renderer);
+        udp::resolver resolver(context);
+        udp::endpoint endpoint = *resolver.resolve(udp::v4(), argv[1], argv[2]);
+
+        udp::socket socket(context);
+        socket.open(udp::v4());
+    } catch (std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return EXIT_FAILURE;
     }
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return 0;
+    return EXIT_SUCCESS;
 }
